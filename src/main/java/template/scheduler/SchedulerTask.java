@@ -25,6 +25,7 @@ import javax.mail.internet.MimeUtility;
 
 import template.db.Conn;
 import template.models.Employee;
+import template.models.User;
 
 public class SchedulerTask extends TimerTask {
 	private static final String NULL = "null";
@@ -73,11 +74,18 @@ public class SchedulerTask extends TimerTask {
 	}
 
 	private void sentMessage(String text, String recepient, String subject, String attachment, Employee employee, int messageId) throws UnsupportedEncodingException {
+		User user = new User();
+		user = Conn.getUser();
 		Properties props = System.getProperties();
 		props.put("mail.smtp.starttls.enable", true); // added this line
 		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.user", "noreplay123456789vovan@gmail.com");
-		props.put("mail.smtp.password", "vovan123");
+		if(user != null) {
+			props.put("mail.smtp.user", user.getEmail());
+			props.put("mail.smtp.password", user.getPassword());
+		} else { 
+			props.put("mail.smtp.user", "noreplay123456789vovan@gmail.com");
+			props.put("mail.smtp.password", "vovan123");
+		}
 		props.put("mail.smtp.port", "587");
 		props.put("mail.smtp.auth", true);
 

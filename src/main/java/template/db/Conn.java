@@ -13,6 +13,7 @@ import java.util.List;
 
 import template.models.Employee;
 import template.models.Message;
+import template.models.User;
 
 public class Conn {
 
@@ -23,7 +24,7 @@ public class Conn {
 	public static void Conn() throws ClassNotFoundException, SQLException {
 		conn = null;
 		Class.forName("org.sqlite.JDBC");
-		conn = DriverManager.getConnection("jdbc:sqlite:smtp.s3db");
+		conn = DriverManager.getConnection("jdbc:sqlite:src/main/resources/smtp.s3db");
 		statmt = conn.createStatement();
 		System.out.println("База Подключена!");
 	}
@@ -63,7 +64,7 @@ public class Conn {
 			employee.setEmail(email);
 			employee.setId(id);
 			employee.setLastUpdate(Integer.parseInt(lastUpdate));
-			
+
 			employeeList.add(employee);
 		}
 
@@ -73,42 +74,72 @@ public class Conn {
 	public static void saveMessage(Message message) {
 		try {
 			String date = new Date().toString();
-			
-			statmt.execute("INSERT INTO 'messages' ('text', 'subject', 'attachment') VALUES ('" + message.getMessage() + "','"
-					+ message.getSubject() + "','" + (message.getAttachment() == null ? "" : message.getAttachment()) + "');");
+
+			statmt.execute("INSERT INTO 'messages' ('text', 'subject', 'attachment') VALUES ('" + message.getMessage()
+					+ "','" + message.getSubject() + "','"
+					+ (message.getAttachment() == null ? "" : message.getAttachment()) + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public static List<Message> getMessagesForSynhronization(Employee employee) throws SQLException{
+
+	public static List<Message> getMessagesForSynhronization(Employee employee) throws SQLException {
 		List<Message> messageList = new ArrayList<Message>();
-		resSet = statmt.executeQuery("select * from messages where messages.id > '"+ employee.getLastUpdate() + "';");
-		
+		resSet = statmt.executeQuery("select * from messages where messages.id > '" + employee.getLastUpdate() + "';");
+
 		while (resSet.next()) {
 			int id = resSet.getInt("id");
 			String subject = resSet.getString("subject");
 			String attachment = resSet.getString("attachment");
 			String text = resSet.getString("text");
-			
+
 			Message message = new Message();
 			message.setId(id);
 			message.setSubject(subject);
 			message.setAttachment(attachment);
 			message.setMessage(text);
-			
+
 			messageList.add(message);
 		}
-		
+
 		return messageList;
 	}
-	
+
 	public static void saveEmployee(Employee employee, int messageId) {
 		try {
-			statmt.execute("UPDATE 'employee' set lastUpdate='" + messageId + "' where id='" +  employee.getId() + "';");
+			statmt.execute("UPDATE 'employee' set lastUpdate='" + messageId + "' where id='" + employee.getId() + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void saveUser(User user) {
+		try {
+			statmt.execute("UPDATE 'user' set email='" + user.getEmail() + "', password='" + user.getPassword()
+					+ "' where id='" + user.getId() + "';");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static User getUser() {
+		User user = new User();
+		try {
+			resSet = statmt.executeQuery("select * from user;");
+			while (resSet.next()) {
+				int id = resSet.getInt("id");
+				String email = resSet.getString("email");
+				String password = resSet.getString("password");
+
+				user.setId(id);
+				user.setEmail(email);
+				user.setPassword(password);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return user;
 	}
 
 }
