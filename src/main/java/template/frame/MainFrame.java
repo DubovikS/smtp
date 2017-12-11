@@ -176,6 +176,7 @@ public class MainFrame extends JFrame {
 									msg.setAttachment(fileDir);
 									Conn.saveMessage(msg);
 									messageTextArea.setText("");
+									chooser.setDirectory(null);
 									JOptionPane.showMessageDialog(MainFrame.this, "Messages sent success.");
 								} catch (Exception e) {
 

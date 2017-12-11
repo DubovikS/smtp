@@ -27,6 +27,8 @@ import template.db.Conn;
 import template.models.Employee;
 
 public class SchedulerTask extends TimerTask {
+	private static final String NULL = "null";
+
 	int count = 1;
 
 	private List<Employee> employeeList;
@@ -58,7 +60,7 @@ public class SchedulerTask extends TimerTask {
 				List<template.models.Message> messagesList = Conn.getMessagesForSynhronization(e);
 				for (template.models.Message m : messagesList) {
 					String attachment =  m.getAttachment() != null ? m.getAttachment() : null;
-					sentMessage(m.getMessage(), e.getEmail(), m.getSubject(), null, e, m.getId());
+					sentMessage(m.getMessage(), e.getEmail(), m.getSubject(), attachment, e, m.getId());
 				}
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
@@ -93,7 +95,7 @@ public class SchedulerTask extends TimerTask {
 			Multipart multipart = new MimeMultipart("alternative");
 
 		
-				if (attachment != null && attachment.length() > 0) {
+				if (!attachment.isEmpty()) {
 
 					MimeBodyPart attachmentBodyPart = new MimeBodyPart();
 					DataSource source = new FileDataSource(attachment);

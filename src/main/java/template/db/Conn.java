@@ -73,8 +73,9 @@ public class Conn {
 	public static void saveMessage(Message message) {
 		try {
 			String date = new Date().toString();
+			
 			statmt.execute("INSERT INTO 'messages' ('text', 'subject', 'attachment') VALUES ('" + message.getMessage() + "','"
-					+ message.getSubject() + "','" + message.getAttachment() + "');");
+					+ message.getSubject() + "','" + (message.getAttachment() == null ? "" : message.getAttachment()) + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
