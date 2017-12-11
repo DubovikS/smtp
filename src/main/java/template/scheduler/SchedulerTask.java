@@ -32,15 +32,7 @@ public class SchedulerTask extends TimerTask {
 	private List<Employee> employeeList;
 
 	public SchedulerTask() {
-		try {
-			Conn.Conn();
-			employeeList = Conn.getListEmployee();
-			// Conn.CloseDB();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		
 	}
 
 	// run is a abstract method that defines task performed at scheduled time.
@@ -52,12 +44,21 @@ public class SchedulerTask extends TimerTask {
 	}
 
 	private void execute() {
+		try {
+			Conn.Conn();
+			employeeList = Conn.getListEmployee();
+			// Conn.CloseDB();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		for (Employee e : employeeList) {
 			try {
 				List<template.models.Message> messagesList = Conn.getMessagesForSynhronization(e);
 				for (template.models.Message m : messagesList) {
 					String attachment =  m.getAttachment() != null ? m.getAttachment() : null;
-					sentMessage(m.getMessage(), e.getEmail(), m.getSubject(), null, e);
+					sentMessage(m.getMessage(), e.getEmail(), m.getSubject(), null, e, m.getId());
 				}
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
@@ -69,7 +70,7 @@ public class SchedulerTask extends TimerTask {
 		}
 	}
 
-	private void sentMessage(String text, String recepient, String subject, String attachment, Employee employee) throws UnsupportedEncodingException {
+	private void sentMessage(String text, String recepient, String subject, String attachment, Employee employee, int messageId) throws UnsupportedEncodingException {
 		Properties props = System.getProperties();
 		props.put("mail.smtp.starttls.enable", true); // added this line
 		props.put("mail.smtp.host", "smtp.gmail.com");
@@ -129,7 +130,7 @@ public class SchedulerTask extends TimerTask {
 			message.addRecipients(Message.RecipientType.TO, InternetAddress.parse(recepient));
 			transport.sendMessage(message, message.getAllRecipients());
 
-			Conn.saveEmployee(employee);
+			Conn.saveEmployee(employee, messageId);
 
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block

@@ -39,7 +39,7 @@ public class MainFrame extends JFrame {
 		super("Smtp");
 		try {
 			Conn.Conn();
-			employeeList = Conn.getListEmployee();
+			//employeeList = Conn.getListEmployee();
 			// Conn.CloseDB();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

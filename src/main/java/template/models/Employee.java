@@ -1,18 +1,16 @@
 package template.models;
 
-import java.util.Date;
-
 public class Employee {
 
 	private int id;
 	private String email;
-	private long lastUpdate;
+	private int lastUpdate;
 
-	public long getLastUpdate() {
+	public int getLastUpdate() {
 		return lastUpdate;
 	}
 
-	public void setLastUpdate(long lastUpdate) {
+	public void setLastUpdate(int lastUpdate) {
 		this.lastUpdate = lastUpdate;
 	}
 

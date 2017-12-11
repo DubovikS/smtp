@@ -18,5 +18,6 @@ public class Main {
 		MainFrame frame = new MainFrame();
 		frame.setBounds(locationX, locationY, sizeWidth, sizeHeight);
 		frame.setVisible(true);
+
 	}
 }

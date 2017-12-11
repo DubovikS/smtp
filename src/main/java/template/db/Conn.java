@@ -62,9 +62,8 @@ public class Conn {
 			Employee employee = new Employee();
 			employee.setEmail(email);
 			employee.setId(id);
-			if(lastUpdate != null) {
-				employee.setLastUpdate(Long.parseLong(lastUpdate));
-			}
+			employee.setLastUpdate(Integer.parseInt(lastUpdate));
+			
 			employeeList.add(employee);
 		}
 
@@ -74,8 +73,8 @@ public class Conn {
 	public static void saveMessage(Message message) {
 		try {
 			String date = new Date().toString();
-			statmt.execute("INSERT INTO 'messages' ('text', 'subject', 'attachment', 'lastUpdate') VALUES ('" + message.getMessage() + "','"
-					+ message.getSubject() + "','" + message.getAttachment() + "','" + date + "');");
+			statmt.execute("INSERT INTO 'messages' ('text', 'subject', 'attachment') VALUES ('" + message.getMessage() + "','"
+					+ message.getSubject() + "','" + message.getAttachment() + "');");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -83,7 +82,7 @@ public class Conn {
 	
 	public static List<Message> getMessagesForSynhronization(Employee employee) throws SQLException{
 		List<Message> messageList = new ArrayList<Message>();
-		resSet = statmt.executeQuery("select * from messages where messages.lastUpdate > '"+ employee.getLastUpdate() + "';");
+		resSet = statmt.executeQuery("select * from messages where messages.id > '"+ employee.getLastUpdate() + "';");
 		
 		while (resSet.next()) {
 			int id = resSet.getInt("id");
@@ -103,10 +102,9 @@ public class Conn {
 		return messageList;
 	}
 	
-	public static void saveEmployee(Employee employee) {
+	public static void saveEmployee(Employee employee, int messageId) {
 		try {
-			String date = new Date().toString();
-			statmt.execute("UPDATE 'employee' set lastUpdate='" + date + "' where id='" +  employee.getId() + "';");
+			statmt.execute("UPDATE 'employee' set lastUpdate='" + messageId + "' where id='" +  employee.getId() + "';");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
